@@ -102,6 +102,6 @@ func CreateShortLink(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"short_url": fmt.Sprintf("http://localhost:3000/%s", idServiceResponse.ID),
+		"short_url": fmt.Sprintf("http://localhost:3000/%s", idServiceResponse.ID), // TODO: get this from env
 	})
 }

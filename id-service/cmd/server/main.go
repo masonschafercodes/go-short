@@ -12,7 +12,7 @@ func main() {
 
 	r := api.InitRouter()
 
-	if err := r.Run(":3004"); err != nil {
+	if err := r.Run(":3004"); err != nil { // TODO: get port from env
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
