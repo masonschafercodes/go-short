@@ -46,5 +46,8 @@ func RedirectToLink(ctx *gin.Context) {
 		return
 	}
 
+	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+	ctx.Header("Pragma", "no-cache")
+	ctx.Header("Expires", "0")
 	ctx.Redirect(http.StatusMovedPermanently, link.OriginalURL)
 }
