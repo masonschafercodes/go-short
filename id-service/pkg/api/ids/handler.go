@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
 
@@ -23,6 +24,7 @@ func CreateShortLinkId(ctx *gin.Context) {
 	linkQuery := ctx.Query("link")
 
 	if linkQuery == "" {
+		log.Println("No link provided")
 		ctx.JSON(400, gin.H{
 			"error": "link is required",
 		})
