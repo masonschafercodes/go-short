@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  short-service:
+    build: ./short-service
+    networks:
+      - mslab
+    ports:
+      - "3003:3003"
+    depends_on:
+      - id-service
+    environment:
+      - REDIS_URL=${REDIS_URL}
+      - PORT=${SHORT_SERVICE_PORT}
+      - DB_URL=${DB_URL}
+      - ID_SERVICE_URL=${ID_SERVICE_URL}
+      - REDIRECTION_SERVICE_PORT=${REDIRECTION_SERVICE_PORT}
+    
+  id-service:
+    build: ./id-service
+    networks:
+      - mslab
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=${ID_SERVICE_PORT}
+  
+  redirection-service:
+    build: ./redirection-service
+    networks:
+      - mslab
+    ports:
+      - "3005:3005"
+    environment:
+      - REDIS_URL=${REDIS_URL}
+      - PORT=${REDIRECTION_SERVICE_PORT}
+      - DB_URL=${DB_URL}
+
+networks:
+  mslab:
+    external: true
