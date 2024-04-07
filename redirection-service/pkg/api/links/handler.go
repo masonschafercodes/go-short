@@ -6,24 +6,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/masonschafercodes/go-short/redirection-service/pkg/db"
+	"github.com/masonschafercodes/go-short/redirection-service/pkg/worker"
 	"github.com/redis/go-redis/v9"
 )
 
 type MessageFromIdService struct {
 	ID string `json:"id"`
-}
-
-func updateCountForShortId(client *pgxpool.Pool, shortId string, ctx *gin.Context) error {
-	_, err := client.Exec(ctx, "UPDATE links SET access_count = access_count + 1 WHERE short_url = ($1)", shortId)
-
-	if err != nil {
-		log.Println("Error updating access count", err)
-		return err
-	}
-
-	return nil
 }
 
 func handleRedirect(ctx *gin.Context, originalURL string) {
@@ -61,12 +50,8 @@ func RedirectToLink(ctx *gin.Context) {
 		}
 
 		rdb.Set(ctx, shortId, originalURL, time.Minute*5)
-		err = updateCountForShortId(client, shortId, ctx)
-
-		if err != nil {
-			log.Println("Error updating access count", err)
-			ctx.Status(500)
-			return
+		worker.UpdateQueue <- worker.UpdateTask{
+			ShortId: shortId,
 		}
 
 		handleRedirect(ctx, originalURL)
@@ -81,17 +66,9 @@ func RedirectToLink(ctx *gin.Context) {
 
 	case val != "":
 		log.Println("Value found in redis")
-
-		client := db.GetConnection()
-
-		err := updateCountForShortId(client, shortId, ctx)
-
-		if err != nil {
-			log.Println("Error updating access count", err)
-			ctx.Status(500)
-			return
+		worker.UpdateQueue <- worker.UpdateTask{
+			ShortId: shortId,
 		}
-
 		handleRedirect(ctx, val)
 	}
 }
