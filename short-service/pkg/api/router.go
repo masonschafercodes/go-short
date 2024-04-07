@@ -25,8 +25,8 @@ func InitRouter() *gin.Engine {
 
 	store := ratelimit.RedisStore(&ratelimit.RedisOptions{
 		RedisClient: db.GetRedisClient(),
-		Rate:        time.Second,
-		Limit:       5,
+		Rate:        time.Minute,
+		Limit:       25,
 	})
 
 	rateLimitingMiddleware := ratelimit.RateLimiter(store, &ratelimit.Options{
