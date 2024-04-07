@@ -30,8 +30,8 @@ func RedirectToLink(ctx *gin.Context) {
 		return
 	}
 
-	var link Link
-	err = client.QueryRow(ctx, "SELECT * FROM links WHERE short_url = ($1)", shortId).Scan(&link.ID, &link.ShortURL, &link.OriginalURL, &link.CreatedAt, &link.AccessCount)
+	var originalURL string
+	err = client.QueryRow(ctx, "SELECT original_url FROM links WHERE short_url = ($1)", shortId).Scan(&originalURL)
 	if err != nil {
 		log.Println("Error querying database", err.Error())
 		ctx.Status(404)
@@ -49,5 +49,5 @@ func RedirectToLink(ctx *gin.Context) {
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 	ctx.Header("Pragma", "no-cache")
 	ctx.Header("Expires", "0")
-	ctx.Redirect(http.StatusMovedPermanently, link.OriginalURL)
+	ctx.Redirect(http.StatusMovedPermanently, originalURL)
 }
