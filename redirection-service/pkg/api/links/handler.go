@@ -83,6 +83,7 @@ func RedirectToLink(ctx *gin.Context) {
 		log.Println("Value found in redis")
 
 		client := db.GetConnection()
+
 		err := updateCountForShortId(client, shortId, ctx)
 
 		if err != nil {
